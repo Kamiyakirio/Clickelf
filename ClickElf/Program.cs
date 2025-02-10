@@ -6,10 +6,10 @@ using System.Windows.Forms;
 
 namespace ClickElf
 {
-    internal static class Program
+    internal class Program
     {
 
-        public static Form1 MainForm;
+        //public static Form1 MainForm;
 
         /// <summary>
         /// 应用程序的主入口点。
@@ -19,8 +19,9 @@ namespace ClickElf
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            MainForm = new Form1();
-            Application.Run(MainForm);
+            //MainForm = new Form1();
+            Application.Run(new FormExecute());
+            //Application.Run();
         }
     }
 }
