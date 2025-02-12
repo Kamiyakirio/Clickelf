@@ -1,18 +1,11 @@
-﻿using System;
+﻿using ClickElf.Key;
+using ClickElf.Mouse;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ClickElf.Interpretor;
-using ClickElf.Key;
-using ClickElf.Mouse;
 
 namespace ClickElf
 {
@@ -57,9 +50,8 @@ namespace ClickElf
                 {
                     if (keyStatus[(uint)Keys.LControlKey] && keyStatus[(uint)Keys.C]) { btnStop.PerformClick(); }
                 }
-                catch (Exception ex) { /*Console.WriteLine($"{ex.Message}");*/ }
+                catch (Exception) { }
             };
-            //this.FormBorderStyle = FormBorderStyle.FixedDialog;
         }
 
         private void InitializeDialog()
@@ -77,18 +69,13 @@ namespace ClickElf
 
         private void btnSelect_Click(object sender, EventArgs e)
         {
-            // openFileDialog.ShowDialog();
+            openFileDialog.InitialDirectory = System.Environment.CurrentDirectory;
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 filePath = openFileDialog.FileName;
                 lblFileName.Text = filePath;
             }
             else { filePath = ""; lblFileName.Text = "未选择文件"; return; }
-            interpretor = new Interpretor.Interpretor(filePath, keyHandler, mouseHandler);
-            foreach (var item in interpretor.GetLines())
-            {
-                Console.WriteLine(item);
-            }
         }
 
         private async void btnExecute_Click(object sender, EventArgs e)

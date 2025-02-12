@@ -34,14 +34,10 @@ namespace ClickElf.Key
         {
             string filePath = "KeyMap.json"; // JSON 文件路径
 
-            // 检查文件是否存在
             if (!File.Exists(filePath))
             {
-                Console.WriteLine("文件未找到.");
                 Keymap.SaveToJson();
-                //return;
             }
-            // 从 JSON 文件读取并反序列化为字典
             string json = File.ReadAllText(filePath);
             keyMap = JsonConvert.DeserializeObject<Dictionary<string, uint>>(json);
         }

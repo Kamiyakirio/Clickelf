@@ -72,7 +72,7 @@ namespace ClickElf
             if (e.CloseReason != CloseReason.UserClosing) this.Dispose();
         }
 
-        private async void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             listBox1.Items.Add(lblMouse.Text);
             // await keyHandler.SendKeyAwait((ushort)Keys.A,500);
@@ -106,7 +106,7 @@ namespace ClickElf
 
         private void button3_Click(object sender, EventArgs e)
         {
-
+            new Crafting.CraftingForm().Show();
         }
 
         private void button5_Click(object sender, EventArgs e)

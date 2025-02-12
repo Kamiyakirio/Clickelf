@@ -14,17 +14,12 @@ using System.Windows.Forms;
 
 namespace ClickElf.Interpretor
 {
-
-    internal struct ExecuteArgs
-    {
-        KeyHandler keyHandler;
-        MouseHandler mouseHandler;
-    }
     internal partial class Interpretor
     {
         private List<string> lines;
         private KeyHandler keyHandler;
         private MouseHandler mouseHandler;
+        private int waitTime;
 
         public Interpretor(string filePath, KeyHandler keyHandler, MouseHandler mouseHandler)
         {
@@ -39,17 +34,34 @@ namespace ClickElf.Interpretor
                     string[] foo = line.Split(';');
                     foreach (var item in foo)
                     {
-                        if (item != "") lines.Add(item);
+                        if (item != "") lines.Add(item.Trim());
                     }
                 }
             }
             this.keyHandler = keyHandler;
             this.mouseHandler = mouseHandler;
+            waitTime = 0;
             variables = new Dictionary<string, string>();
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("#"))
+                {
+                    line.ToLower();
+                    string[] tokens = line.Split(' ');
+                    if (tokens[0] == "#globaldelay" || tokens[0] == "#autodelay")
+                    {
+                        bool parseResult = int.TryParse(tokens[1], out int tryp);
+                        if (!parseResult) { throw new Exception("执行出错"); }
+                        else { waitTime = tryp; }
+                    }
+                }
+                else break;
+            }
         }
-        public void ExecuteLine(string line, int column)
+        // 返回：false - 不需要停顿; true - 需要停顿
+        public bool ExecuteLine(string line, int column)
         {
-            if (line == "" || string.IsNullOrWhiteSpace(line) || line.StartsWith("//")) return;
+            if (line == "" || string.IsNullOrWhiteSpace(line) || line.StartsWith("//")) return false;
             string[] tokens = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             string command = tokens[0].ToLower();
             for (int i = 1; i < tokens.Length; i++)
@@ -66,13 +78,13 @@ namespace ClickElf.Interpretor
                         throw new ArgumentException("无法被解析为合理的数值");
                     }
                     mouseHandler.MouseMove(x, y);
-                    break;
+                    return true;
                 case "w": // Wait
                     if (tokens.Length != 2) throw new ArgumentException("w的参数只能为1个");
                     int sleep;
                     if (!int.TryParse(tokens[1], out sleep)) throw new ArgumentException("无法被解析为合理的数值");
                     Thread.Sleep(sleep);
-                    break;
+                    return true;
                 case "pk": // Press Keyboard
                     if (tokens.Length != 3) throw new ArgumentException("PK的参数只能为2个");
                     int vkCode = -1;
@@ -111,7 +123,7 @@ namespace ClickElf.Interpretor
                             else if (litkey[0] == 'A') keyHandler.SendDoubleInput(Keys.LMenu, (Keys)keymap[litkey[1].ToString()]);
                         }
                     }
-                    break;
+                    return true;
                 case "mc": // Mouse Click
                     if (tokens.Length != 2)
                     {
@@ -135,7 +147,7 @@ namespace ClickElf.Interpretor
                     {
                         mouseHandler.MouseClick(MouseHandler.MouseType.Right);
                     }
-                    break;
+                    return true;
                 case "set":
                     if (tokens.Length < 3)
                         throw new ArgumentException($"set 需要至少 2 个参数！");
@@ -148,25 +160,34 @@ namespace ClickElf.Interpretor
                             throw new ArgumentException($"解析错误 in column {column}");
                         }
                         string varName = tokens[1];
-                        string varValue=EvaluateMathExpression(expression).ToString();
+                        string varValue = EvaluateMathExpression(expression).ToString();
                         variables[varName] = varValue;
                     }
                     else
                     {
                         string firstParam = tokens[1], secondParam = tokens[2];
+                        if (char.IsDigit(firstParam[0])) { throw new ArgumentException("变量名不能以数字开头"); }
+                        string notAllowedChar = "!@#$%^&*()-+={}[]|\\:;\'\",./<>?";
+                        if (firstParam.Any(item => notAllowedChar.Contains(item))) { throw new ArgumentException("不合法的变量名"); }
                         variables[firstParam] = secondParam;
                     }
-                    break;
+                    return false;
                 default:
-                    if (!tokens[0].StartsWith("//"))
+                    if (!tokens[0].StartsWith("//") && !tokens[0].StartsWith("#"))
                         throw new ArgumentException($"无法解析的参数 in column {column}");
                     break;
             }
+            return false;
         }
 
         public void Execute()
         {
-            for (int i = 0; i < lines.Count; i++) { ExecuteLine(lines[i], i + 1); }
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].StartsWith("#")) continue;
+                bool returnStatus = ExecuteLine(lines[i], i + 1);
+                if (waitTime != 0 && i != lines.Count - 1 && returnStatus) Thread.Sleep(waitTime);
+            }
         }
 
         public List<string> GetLines() { return lines; }
