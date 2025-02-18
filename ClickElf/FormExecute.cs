@@ -19,6 +19,7 @@ namespace ClickElf
         private FormImf formImf;
 
         private CancellationTokenSource _cts;
+        private bool executing = false;
 
         private Dictionary<uint, bool> keyStatus;
 
@@ -53,7 +54,6 @@ namespace ClickElf
                 catch (Exception) { }
             };
         }
-
         private void InitializeDialog()
         {
             openFileDialog = new OpenFileDialog();
@@ -104,21 +104,24 @@ namespace ClickElf
             lblStatus.ForeColor = Color.Green;
             lblStatus.Text = "执行中";
             btnStop.Enabled = true;
+            executing = true;
             for (int i = 0; i < times; ++i)
             {
                 Task task = Task.Run(() => Execute(interpretor, token), token);
                 await task;
                 if (token.IsCancellationRequested) break;
             }
+            if (executing) return;
             lblStatus.ForeColor = Color.Red;
             lblStatus.Text = token.IsCancellationRequested ? "已取消" : "已完成";
             btnStop.Enabled = false;
+            executing = false;
         }
 
         private void Execute(Interpretor.Interpretor interpretor, CancellationToken token)
         {
             if (token.IsCancellationRequested) return;
-            interpretor.Execute();
+            interpretor.Execute(token);
             if (token.IsCancellationRequested) return;
         }
 
@@ -131,6 +134,8 @@ namespace ClickElf
         {
             _cts?.Cancel();
             btnStop.Enabled = false;
+            lblStatus.ForeColor= Color.Red;
+            lblStatus.Text = "已取消";
         }
     }
 }

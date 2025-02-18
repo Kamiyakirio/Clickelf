@@ -121,17 +121,17 @@ namespace ClickElf.Crafting
                 scripts.Add($"#AutoDelay {txtAutoDelay.Text}");
             scripts.Add($"mv {startPos}; mc l");
             scripts.Add("w 1500");
-            if (txtM1Pos.Visible) scripts.Add($"mv {m1Pos}; mc l; w {m1Time}");
-            if (txtM2Pos.Visible) scripts.Add($"mv {m2Pos}; mc l; w {m2Time}");
-            if (txtM3Pos.Visible) scripts.Add($"mv {m3Pos}; mc l; w {m3Time}");
+            if (txtM1Pos.Visible) scripts.Add($"mv {m1Pos}; mc l; w {m1Time * 1000}");
+            if (txtM2Pos.Visible) scripts.Add($"mv {m2Pos}; mc l; w {m2Time * 1000}");
+            if (txtM3Pos.Visible) scripts.Add($"mv {m3Pos}; mc l; w {m3Time * 1000}");
             string scriptText = "";
             foreach (var s in scripts)
                 scriptText += s + "\r\n";
             var result = MessageBox.Show($"{scriptText}", "Script preview", MessageBoxButtons.OKCancel);
             if (result == DialogResult.OK)
             {
-                string fileName = $"script_{DateTime.Now.ToString()}.txt";
-                File.WriteAllText(fileName, scriptText, Encoding.UTF8);
+                string fileName = $"script_{DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss")}.txt";
+                File.WriteAllText(".\\" + fileName, scriptText, Encoding.UTF8);
                 MessageBox.Show($"脚本已生成为: {fileName}");
             }
         }

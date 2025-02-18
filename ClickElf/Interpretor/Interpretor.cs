@@ -180,14 +180,18 @@ namespace ClickElf.Interpretor
             return false;
         }
 
-        public void Execute()
+        public void Execute(CancellationToken token)
         {
+            if(token.IsCancellationRequested) return;
             for (int i = 0; i < lines.Count; i++)
             {
                 if (lines[i].StartsWith("#")) continue;
+                if (token.IsCancellationRequested) return;
                 bool returnStatus = ExecuteLine(lines[i], i + 1);
+                if (token.IsCancellationRequested) return;
                 if (waitTime != 0 && i != lines.Count - 1 && returnStatus) Thread.Sleep(waitTime);
             }
+            if (token.IsCancellationRequested) return;
         }
 
         public List<string> GetLines() { return lines; }
