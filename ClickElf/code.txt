@@ -1,4 +1,0 @@
-Mouse.Move(500,500);
-Mouse.Click(0);
-Keyboard.Input("a");
-Wait(500);Wait(250);Mouse.Click(1);
