@@ -45,6 +45,7 @@
             this.button5 = new System.Windows.Forms.Button();
             this.lblColor = new System.Windows.Forms.Label();
             this.colorBox = new System.Windows.Forms.PictureBox();
+            this.button6 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.colorBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -201,11 +202,22 @@
             this.colorBox.TabIndex = 16;
             this.colorBox.TabStop = false;
             // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(668, 361);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(120, 77);
+            this.button6.TabIndex = 17;
+            this.button6.Text = "CVDo";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // FormImf
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.colorBox);
             this.Controls.Add(this.lblColor);
             this.Controls.Add(this.button5);
@@ -254,6 +266,7 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label lblColor;
         private System.Windows.Forms.PictureBox colorBox;
+        private System.Windows.Forms.Button button6;
     }
 }
 

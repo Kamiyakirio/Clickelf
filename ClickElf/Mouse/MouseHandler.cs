@@ -46,7 +46,6 @@ namespace ClickElf.Mouse
                     break;
                 default:
                     throw new ArgumentException();
-                    break;
             }
 
         }
